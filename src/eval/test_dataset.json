@@ -1,0 +1,23 @@
+[
+  {
+    "question": "What are the liquidity reserve requirements for authorized financial firms under FCA rules?",
+    "contexts": [
+      "FCA-COND-1.2: Authorized firms must maintain liquid capital reserves equivalent to at least 3 months of operational expenditure."
+    ],
+    "ground_truth": "Under FCA-COND-1.2, authorized firms are required to hold liquid capital reserves equal to or exceeding 3 months of operational expenditure."
+  },
+  {
+    "question": "How should senior management oversight responsibilities be assigned under SM&CR?",
+    "contexts": [
+      "FCA-SYSC-4.1: Firms must allocate explicit compliance oversight responsibilities to senior management functions under SM&CR."
+    ],
+    "ground_truth": "Per FCA-SYSC-4.1, compliance oversight responsibilities must be explicitly allocated to designated senior management functions under the SM&CR framework."
+  },
+  {
+    "question": "What is the mandatory reporting threshold for operational disruptions under FCA guidelines?",
+    "contexts": [
+      "FCA-SUP-15.3: Major operational disruptions or cyber incidents affecting client services must be reported to the FCA within 2 hours of detection."
+    ],
+    "ground_truth": "FCA-SUP-15.3 stipulates that any major operational disruption or cyber incident impacting client services must be reported within 2 hours of detection."
+  }
+]
