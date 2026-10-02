@@ -1,0 +1,22 @@
+# Environment variables & secrets (NEVER COMMIT)
+.env
+.env.*
+!.env.example
+*.env
+
+# Python runtime / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# OS / Editor temporary files
+.DS_Store
+Thumbs.db
+.vscode/
+ERROR pip's dependency.txt
