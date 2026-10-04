@@ -1,13 +1,25 @@
 import json
-import os
+import logging
 from typing import Dict, Any
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from src.agents.state import AuditState
-from dotenv import load_dotenv
-load_dotenv()
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+logger = logging.getLogger(__name__)
+
+# Initialize Primary (OpenAI) Model
+primary_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
+
+# Configure Fallback to Local Ollama
+try:
+    from langchain_ollama import ChatOllama
+    fallback_llm = ChatOllama(model="llama3.2", temperature=0.0)
+    # with_fallbacks intercepts OpenAI quota, rate limit, and connection errors
+    llm = primary_llm.with_fallbacks([fallback_llm])
+except ImportError:
+    logger.warning("langchain-ollama package not installed. Automatic fallback disabled.")
+    llm = primary_llm
+
 
 def planner_node(state: AuditState) -> Dict[str, Any]:
     """Decomposes the audit query into granular compliance verification tasks."""
@@ -33,13 +45,14 @@ Return ONLY a JSON array of strings, e.g., ["Task 1", "Task 2"]"""
         "status": "planned"
     }
 
+
 def retriever_node(state: AuditState) -> Dict[str, Any]:
     """Fetches regulatory rules and internal report clauses for the active task."""
     tasks = state.get("audit_tasks", [])
     idx = state.get("current_task_idx", 0)
     current_task = tasks[idx] if idx < len(tasks) else state["user_query"]
 
-    # Regulatory knowledge base mock chunks (connected to HybridRetriever in production)
+    # Regulatory knowledge base mock chunks
     fca_rules = [
         {
             "id": "FCA-COND-1.2",
@@ -57,6 +70,7 @@ def retriever_node(state: AuditState) -> Dict[str, Any]:
         "retrieved_docs": fca_rules,
         "status": "retrieved"
     }
+
 
 def verifier_node(state: AuditState) -> Dict[str, Any]:
     """Verifies compliance against retrieved rules and scores evidence confidence."""
