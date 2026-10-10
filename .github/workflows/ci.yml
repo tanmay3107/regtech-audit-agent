@@ -1,0 +1,44 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ruff mypy pytest
+        pip install -r requirements.txt
+
+    - name: Run Ruff Linter
+      run: ruff check src/
+
+    - name: Run Static Type Checker (mypy)
+      run: mypy src/ --ignore-missing-imports || true
+
+    - name: Run Test Suite
+      env:
+        OPENAI_API_KEY: "mock-key-for-testing"
+      run: pytest tests/ --ignore=tests/integration
